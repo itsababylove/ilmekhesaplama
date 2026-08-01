@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Akıllı Örgü & İlmek Hesaplayıcı</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --primary-light: #a29bfe;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-main: #2d3436;
+            --text-muted: #636e72;
+            --border: #dfe6e9;
+            --accent: #fd79a8;
+            --shadow: 0 10px 30px rgba(108, 92, 231, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 540px;
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(223, 230, 233, 0.6);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 6px;
+        }
+
+        .header p {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .tabs {
+            display: flex;
+            background: #f1f2f6;
+            border-radius: 14px;
+            padding: 4px;
+            margin-bottom: 24px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background: var(--card-bg);
+            color: var(--primary);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .section-box {
+            background: #fcfcfd;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--primary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .field label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 10px 14px;
+            padding-right: 40px;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-main);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        .input-wrapper input:focus {
+            border-color: var(--primary);
+        }
+
+        .input-wrapper span {
+            position: absolute;
+            right: 12px;
+            font-size: 12px;
+            color: var(--text-muted);
+            pointer-events: none;
+            font-weight: 500;
+        }
+
+        .btn-calc {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.3s transform 0.1s;
+            box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+        }
+
+        .btn-calc:hover {
+            background: #5b4cc4;
+        }
+
+        .btn-calc:active {
+            transform: scale(0.99);
+        }
+
+        /* Sonuç Alanı Yan Yana Sütunlar */
+        .result-card {
+            margin-top: 24px;
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            border-radius: 18px;
+            padding: 24px;
+            color: white;
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            text-align: center;
+        }
+
+        .result-column {
+            background: rgba(255, 255, 255, 0.12);
+            padding: 16px 12px;
+            border-radius: 14px;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .result-column .label {
+            font-size: 12px;
+            opacity: 0.95;
+            font-weight: 600;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .result-column .main-value {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .result-column .unit {
+            font-size: 14px;
+            font-weight: 600;
+            opacity: 0.9;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>🧶 Örgü İlmek & Ölçü Hesaplayıcı</h1>
+        <p>Tarifteki değerleri kendi ipinizle birebir uyumlu hale getirin</p>
+    </div>
+
+    <!-- Mod Seçimi -->
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('ilmek')">İlmek Sayısına Göre</div>
+        <div class="tab" onclick="switchTab('cm')">CM Ölçüsüne Göre</div>
+    </div>
+
+    <!-- 1. Tarif Swatch -->
+    <div class="section-box">
+        <div class="section-title">📌 Tarifteki Örnek (10x10 cm)</div>
+        <div class="grid-2">
+            <div class="field">
+                <label>En (İlmek)</label>
+                <div class="input-wrapper">
+                    <input type="number" id="recipeEn" value="24" placeholder="24">
+                    <span>ilmek</span>
+                </div>
+            </div>
+            <div class="field">
+                <label>Boy (Sıra)</label>
+                <div class="input-wrapper">
+                    <input type="number" id="recipeBoy" value="26" placeholder="26">
+                    <span>sıra</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Bizim Swatch -->
+    <div class="section-box">
+        <div class="section-title">🧶 Sizin Ördüğünüz Örnek (10x10 cm)</div>
+        <div class="grid-2">
+            <div class="field">
+                <label>En (İlmek)</label>
+                <div class="input-wrapper">
+                    <input type="number" id="myEn" value="19" placeholder="19">
+                    <span>ilmek</span>
+                </div>
+            </div>
+            <div class="field">
+                <label>Boy (Sıra)</label>
+                <div class="input-wrapper">
+                    <input type="number" id="myBoy" value="24" placeholder="24">
+                    <span>sıra</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Tarif Hedefi -->
+    <div class="section-box">
+        <div class="section-title" id="targetTitle">📋 Tarifte Verilen İlmek Sayısı</div>
+        <div class="field">
+            <div class="input-wrapper">
+                <input type="number" id="targetValue" value="220" placeholder="220">
+                <span id="targetUnit">ilmek</span>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn-calc" onclick="calculate()">Hesapla</button>
+
+    <!-- Sonuç Kartı (Yan Yana Sütunlar) -->
+    <div class="result-card" id="resultCard">
+        <div class="result-grid">
+            <div class="result-column">
+                <div class="label">Başlama İlmeği</div>
+                <div class="main-value" id="resStitches">174</div>
+                <div class="unit">İlmek</div>
+            </div>
+            <div class="result-column">
+                <div class="label">CM Karşılığı</div>
+                <div class="main-value" id="resCm">92</div>
+                <div class="unit">cm</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-note">
+        ✨ Formüller ve hesaplama mantığı arka planda korumalı olarak çalışır.
+    </div>
+</div>
+
+<script>
+    let currentMode = 'ilmek';
+
+    function switchTab(mode) {
+        currentMode = mode;
+        const tabs = document.querySelectorAll('.tab');
+        tabs[0].classList.toggle('active', mode === 'ilmek');
+        tabs[1].classList.toggle('active', mode === 'cm');
+
+        const title = document.getElementById('targetTitle');
+        const unit = document.getElementById('targetUnit');
+        const targetInput = document.getElementById('targetValue');
+
+        if(mode === 'ilmek') {
+            title.innerText = '📋 Tarifte Verilen İlmek Sayısı';
+            unit.innerText = 'ilmek';
+            if(targetInput.value === '95') targetInput.value = '220';
+        } else {
+            title.innerText = '📏 Hedef Genişlik CM';
+            unit.innerText = 'cm';
+            if(targetInput.value === '220') targetInput.value = '95';
+        }
+        document.getElementById('resultCard').style.display = 'none';
+    }
+
+    function calculate() {
+        const rEn = parseFloat(document.getElementById('recipeEn').value) || 0;
+        const mEn = parseFloat(document.getElementById('myEn').value) || 0;
+        const target = parseFloat(document.getElementById('targetValue').value) || 0;
+
+        if(!rEn || !mEn || !target) {
+            alert('Lütfen gerekli alanları doldurun.');
+            return;
+        }
+
+        const rDensityStitch = rEn / 10;
+        const mDensityStitch = mEn / 10;
+
+        let requiredStitches = 0;
+        let calculatedCm = 0;
+
+        if (currentMode === 'ilmek') {
+            // Tarif ilmek vermiş -> CM ve Başlanacak İlmek hesaplanır
+            calculatedCm = Math.ceil(target / rDensityStitch);
+            requiredStitches = Math.round((target * mDensityStitch) / rDensityStitch);
+        } else {
+            // Tarif CM vermiş -> CM zaten sabit, Başlanacak İlmek hesaplanır
+            calculatedCm = target;
+            requiredStitches = Math.round(target * mDensityStitch);
+        }
+
+        document.getElementById('resStitches').innerText = requiredStitches;
+        document.getElementById('resCm').innerText = calculatedCm;
+        
+        const resCard = document.getElementById('resultCard');
+        resCard.style.display = 'block';
+    }
+</script>
+</body>
+</html>
